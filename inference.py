@@ -3,8 +3,17 @@ import json
 import os
 import time
 from typing import Dict, Any, List
+from openai import OpenAI
 
-API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
+HF_TOKEN = os.getenv("HF_TOKEN")
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
+
+# Optional: configure the OpenAI client using these variables if using LLMs
+client = OpenAI(
+    api_key=HF_TOKEN or "dummy-key",
+)
 
 class BaselineAgent:
     def __init__(self, session_id: str):
@@ -50,9 +59,8 @@ class BaselineAgent:
         if invoice and invoice.get("total_amount", 0) > obs.get("approval_threshold", 0):
             return {"action_type": "escalate_manager", "reason": "Above approval threshold."}
 
-        # Handle hard cases (fraud indicators usually hidden in full data, but let's assume we escalate if uncertain)
+        # Handle hard cases
         if obs["task_id"] == "hard":
-            # If everything looks too perfect but it's a hard task, maybe check history or escalate risk
             if "inspect_vendor_profile" in history:
                 return {"action_type": "escalate_risk", "reason": "Hard task: escalatting for manual risk review."}
 
@@ -60,12 +68,14 @@ class BaselineAgent:
         return {"action_type": "approve", "reason": "All documents match and within threshold."}
 
 def run_inference(task_id: str = "easy"):
+    print("START")
     print(f"--- Running Inference for Task: {task_id} ---")
     
     # 1. Reset/Start Session
     resp = requests.post(f"{API_BASE_URL}/reset?task_id={task_id}")
     if resp.status_code != 200:
         print(f"Error starting session: {resp.text}")
+        print("END")
         return
         
     data = resp.json()
@@ -79,6 +89,7 @@ def run_inference(task_id: str = "easy"):
     
     while not done and steps < 20:
         steps += 1
+        print("STEP")
         action = agent.choose_action(obs)
         print(f"Step {steps}: Action -> {action['action_type']}")
         
@@ -100,6 +111,8 @@ def run_inference(task_id: str = "easy"):
                 print(f"Final Score: {info['final_score']}")
             if "score_explanation" in info:
                 print(f"Explanation: {json.dumps(info['score_explanation'], indent=2)}")
+    
+    print("END")
 
 if __name__ == "__main__":
     # Check if server is running
@@ -112,3 +125,4 @@ if __name__ == "__main__":
     for task in ["easy", "medium", "hard"]:
         run_inference(task)
         print("\n" + "="*50 + "\n")
+
