@@ -15,10 +15,14 @@ dependencies = [
     "requests==2.31.0",
     "pytest==8.0.2",
     "PyYAML==6.0.1",
-    "openai"
+    "openai",
+    "openenv-core"
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest"
 ]
+
+[project.scripts]
+server = "app.main:main"
