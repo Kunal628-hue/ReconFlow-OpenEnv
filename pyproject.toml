@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reconflow-openenv"
+version = "1.0.0"
+description = "AI agent environment for Accounts Payable / Procurement Operations."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.110.0",
+    "uvicorn==0.27.1",
+    "pydantic==2.6.3",
+    "requests==2.31.0",
+    "pytest==8.0.2",
+    "PyYAML==6.0.1",
+    "openai"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]
