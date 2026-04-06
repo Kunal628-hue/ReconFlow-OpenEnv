@@ -1,129 +1,190 @@
-# ReconFlow-OpenEnv
+# 🛡️ ReconFlow-OpenEnv: AI-Powered Accounts Payable Assistant Simulator
 
-**ReconFlow-OpenEnv** is a high-fidelity OpenEnv simulator for an Accounts Payable / Procurement Operations assistant. It simulates real-world invoice reconciliation workflows, business policy enforcement, and fraud risk detection.
+[![Powered by OpenEnv](https://img.shields.io/badge/Powered%20By-OpenEnv-blue?style=for-the-badge&logo=openai)](https://github.com/OpenEnv/OpenEnv)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-green?style=for-the-badge&logo=python)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Docker Ready](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
 
-This environment is designed for training and evaluating AI agents that automate business operations, specifically the matching of invoices against purchase orders (POs) and goods receipts (GRs).
+**ReconFlow-OpenEnv** is a cutting-edge, high-fidelity simulation environment designed for training and evaluating AI agents in **Accounts Payable (AP) and Procurement Operations**. It replicates real-world invoice reconciliation workflows, business policy enforcement, and sophisticated fraud risk detection scenarios.
 
 ---
 
-## 🏛️ Domain Context
-In modern finance operations, an agent (human or AI) must ensure the accuracy of outgoing payments. This process, known as **3-way matching**, involves verifying that:
-1. The **Invoice** matches the **Purchase Order** (Intent).
-2. The **Invoice** matches the **Goods Receipt** (Actual delivery).
-3. The **Vendor** is legitimate and has no high-risk anomalies.
+## 📋 Table of Contents
+
+- [📌 Introduction](#📌-introduction)
+- [🧩 High-Fidelity Domain Context](#🧩-high-fidelity-domain-context)
+- [🚀 Key Features](#🚀-key-features)
+- [🏗️ Project Architecture](#🏗️-project-architecture)
+- [🛠️ Tech Stack](#🛠️-tech-stack)
+- [📦 Installation & Setup](#📦-installation--setup)
+- [🎯 Running the Environment](#🎯-running-the-environment)
+- [🧠 Action Space & Observation System](#🧠-action-space--observation-system)
+- [📊 Simulation Scenarios](#📊-simulation-scenarios)
+- [⚖️ Grading & Feedback](#⚖️-grading--feedback)
+- [🐳 Dockerization](#🐳-dockerization)
+- [📄 License](#📄-license)
+
+---
+
+## 📌 Introduction
+
+The complexity of modern finance operations requires high accuracy in outgoing payments. ReconFlow simulates this complexity by providing an environment where AI agents must perform **3-Way Matching** to ensure fiscal responsibility and prevent fraud.
+
+> [!IMPORTANT]
+> This environment is built on top of the **OpenEnv** standard, providing a deterministic and explainable sandbox for business-centric AI agents.
+
+---
+
+## 🧩 High-Fidelity Domain Context
+
+In a production environment, an AP assistant must verify that:
+1.  **Intent (PO):** Does the invoice match the original Purchase Order?
+2.  **Delivery (GR):** Was the service/good actually received?
+3.  **Entity (Vendor):** Is the vendor profile legitimate and the payment details accurate?
+
+---
 
 ## 🚀 Key Features
-- **Deterministic Simulation**: Built with structured scenario data (Easy, Medium, Hard).
-- **OpenEnv Compliant**: Implements the standard `reset()`, `step(action)`, and `state()` API.
-- **Rich Action Space**: Agents can inspect documents, compare values, check history, and escalate to humans.
-- **Explainable Scoring**: Deterministic graders evaluate correctness, efficiency, and safety (0.0 to 1.0).
-- **Reward Shaping**: Step-wise rewards for exploration and high penalties for unsafe approvals.
+
+*   🎯 **Deterministic Workflows**: Multi-stage scenarios (Easy, Medium, Hard) for progressive evaluation.
+*   🛡️ **Fraud Detection Engine**: Simulates sophisticated threats like split invoices and vendor profile manipulation.
+*   ⚡ **OpenEnv API**: Standardized `reset()`, `step(action)`, and `state()` endpoints for seamless agent integration.
+*   🔍 **Masked Observations**: Agents start with zero information and must perform "Inspect" actions to reveal data, preventing "magic" solutions.
+*   ⚖️ **Rich Grader & Rewards**: Multi-dimensional scoring (Accuracy, Efficiency, Safety) with explainable feedback logs.
+
+---
+
+## 🏗️ Project Architecture
+
+The core of ReconFlow is modular, separating the environment logic from the scenario data and the API layer.
+
+```mermaid
+graph TD
+    A[AI Agent] -->|POST /step| B(FastAPI Server)
+    B --> C{ReconFlowEnv}
+    C -->|Loads Scenarios| D[Scenario Manager]
+    C -->|Calculates| E[Reward Engine]
+    C -->|Validates| F[Grading Logic]
+    D -->|Data| G[JSON Scenarios]
+    G -.-> H[Easy/Medium/Hard Cases]
+    C -->|Returns| I[Masked Observation]
+    I --> A
+```
+
+### Directory Structure
+
+| File/Folder | Purpose |
+| :--- | :--- |
+| `app/api.py` | FastAPI server managing environment sessions. |
+| `app/env/` | Core environment logic: models, rewards, and grading. |
+| `data/` | JSON datasets for various simulation scenarios. |
+| `inference.py` | A baseline agent showcasing the API interaction. |
+| `openenv.yaml` | Manifest file defining the environment's metadata. |
+| `run_demo.py` | Orchestration script to run a full simulation demo. |
 
 ---
 
 ## 🛠️ Tech Stack
-- **Language**: Python 3.11+
-- **Framework**: FastAPI (for API serving)
-- **Validation**: Pydantic (for typed models)
-- **Deployment**: Docker-ready, Hugging Face Space compatible.
+
+*   **Language**: ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)
+*   **Web Framework**: ![FastAPI](https://img.shields.io/badge/FastAPI-005863?style=flat-square&logo=fastapi&logoColor=white)
+*   **Validation & Serialization**: ![Pydantic](https://img.shields.io/badge/Pydantic-E92063?style=flat-square&logo=pydantic&logoColor=white)
+*   **Infrastructure**: ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 
 ---
 
-## 📂 Project Structure
+## 📦 Installation & Setup
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Kunal628-hue/ReconFlow-OpenEnv.git
+cd ReconFlow-OpenEnv
 ```
-reconflow-openenv/
-  app/
-    main.py             # Server entrypoint
-    api.py              # FastAPI endpoints
-    env/
-      environment.py    # OpenEnv implementation
-      models.py         # Pydantic states, actions, obs
-      scenarios.py      # Data loader
-      rewards.py        # Reward logic
-      graders.py        # Scoring logic
-      state_machine.py  # Internal state transitions
-  data/
-    easy_cases.json     # Basic 3-way match
-    medium_cases.json   # Policy-aware routing
-    hard_cases.json     # Fraud/Anomaly detection
-  tests/
-    test_env.py         # Unit tests
-  openenv.yaml          # OpenEnv manifest
-  inference.py          # Baseline agent script
-  Dockerfile            # Container setup
-  requirements.txt      # Dependencies
+
+### 2. Install Dependencies
+We recommend using a virtual environment.
+```bash
+pip install -r requirements.txt
 ```
 
 ---
 
-## 📝 Usage
+## 🎯 Running the Environment
 
-### Local Setup
-1. **Installation**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### A. Run the Standalone Server
+```bash
+python app/main.py
+```
+The API documentation will be available at `http://localhost:8000/docs`.
 
-2. **Run the Environment Server**:
-   ```bash
-   python app/main.py
-   ```
-   The API will be available at `http://localhost:8000`.
+### B. Run a Full Demo (Server + Agent)
+```bash
+python run_demo.py
+```
+This script handles the server lifecycle and runs the baseline agent through all scenarios.
 
-3. **Run Baseline Inference**:
-   ```bash
-   python inference.py
-   ```
-
-4. **Run Tests**:
-   ```bash
-   PYTHONPATH=. python tests/test_env.py
-   ```
-
-### API Endpoints
-- `POST /reset?task_id=easy`: Starts a new case. Returns `session_id` and initial `observation`.
-- `POST /step/{session_id}`: Takes an action. Expects JSON: `{"action_type": "...", "reason": "..."}`.
-- `GET /state/{session_id}`: Returns the full internal state (for debugging/grading).
-- `GET /health`: Health check.
+### C. Run Tests
+```bash
+PYTHONPATH=. pytest tests/test_env.py
+```
 
 ---
 
-## 🧠 Environment Design
+## 🧠 Action Space & Observation System
 
 ### 📦 Action Space
-- `inspect_invoice`, `inspect_po`, `inspect_goods_receipt`, `inspect_vendor_profile`: Reveal hidden data.
-- `check_duplicate_invoice`: Checks historical data for duplicates.
-- `compare_amounts`, `compare_quantities`, `compare_tax`: Verifies alignment.
-- `request_document`: Ask for missing data.
-- `flag_mismatch`, `flag_fraud_risk`: Tag issues before action.
-- **TERMINAL**: `approve`, `reject`, `escalate_manager`, `escalate_risk`.
+Agents interact by choosing from these high-level actions:
+*   `inspect_invoice`, `inspect_po`, `inspect_goods_receipt`, `inspect_vendor_profile`: Reveals data fields.
+*   `check_duplicate_invoice`: Checks history for similar claims.
+*   `compare_amounts`, `compare_tax`: Validates math across documents.
+*   **TERMINAL**: `approve`, `reject`, `escalate_manager`, `escalate_risk`.
 
 ### 📊 Observations
-The observation is masked. Agents must perform `inspect` actions to see invoice totals, line items, or vendor history. This prevents trivial "magic" solutions and forces logical workflow progression.
-
-### 🏆 Tasks & Difficulty
-| Task | Level | Description | Core Challenge |
-|---|---|---|---|
-| **Task 1** | Easy | Basic 3-Way Match | Verify clean data or simple mismatch. |
-| **Task 2** | Medium | Policy Compliance | Handle tax, duplicate checks, and thresholds. |
-| **Task 3** | Hard | Fraud Escalation | Detect bank changes, price inflation, or split invoices. |
+Observations are "masked" by default. The agent only receives `case_id` and `action_history` initially. Each `inspect` action adds key-value pairs from the underlying document to the observation space.
 
 ---
 
-## ⚖️ Grading & Rewards
-- **Grader (0.0 - 1.0)**: Combines Decision Accuracy (40%), Analysis Completeness (30%), Safety (20%), and Efficiency (10%).
-- **Reward**:
-  - `+0.1` per new document inspected.
-  - `+0.5` for correct final decision.
-  - `-1.0` for **Unsafe Approval** (approving a fraud-risk or high-mismatch case).
+## 📊 Simulation Scenarios
+
+| Difficulty | Description | Core Challenges |
+| :--- | :--- | :--- |
+| **Easy** | 3-Way Match | Simple document verification and basic mismatches. |
+| **Medium** | Policy Aware | Tax rule compliance, duplicate checks, and thresholding. |
+| **Hard** | Extreme Risk | Detect price inflation, split invoices, and vendor account manipulation. |
 
 ---
 
-## 🐳 Docker Deployment
+## ⚖️ Grading & Feedback
+
+The ReconFlow grader provides a multi-dimensional score from **0.0 to 1.0**:
+
+1.  **Decision Accuracy (40%)**: Did the agent make the correct final action?
+2.  **Analysis Completeness (30%)**: Did the agent inspect all necessary documents?
+3.  **Safety (20%)**: Did the agent prevent high-risk fraudulent payouts?
+4.  **Efficiency (10%)**: How many steps were taken relative to the optimal path?
+
+### Reward Shaping
+*   **+0.1**: For each document inspection step.
+*   **+0.5**: Successful episode termination with the correct decision.
+*   **-1.0**: Critical failure (Unsafe approval of a fraud-risk case).
+
+---
+
+## 🐳 Dockerization
+
+Run the environment in a container for consistent evaluation.
+
 ```bash
 docker build -t reconflow .
 docker run -p 8000:8000 reconflow
 ```
 
 ---
-*Created for the OpenEnv Hackathon.*
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+*Developed for the OpenEnv Hackathon.*
