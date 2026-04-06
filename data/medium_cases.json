@@ -1,0 +1,127 @@
+[
+  {
+    "id": "med-001",
+    "task_id": "medium",
+    "invoice": {
+      "invoice_number": "INV-2001",
+      "total_amount": 7500.00,
+      "currency": "USD",
+      "vendor_id": "V-601",
+      "date": "2024-03-15",
+      "items": [{"description": "Marketing Services", "quantity": 1, "price": 7500.00}]
+    },
+    "po": {
+      "po_number": "PO-7001",
+      "total_amount": 7500.00,
+      "items": [{"description": "Marketing Services", "quantity": 1, "price": 7500.00}]
+    },
+    "goods_receipt": {
+      "gr_number": "GR-6001",
+      "received_items": [{"description": "Marketing Services", "quantity": 1}]
+    },
+    "vendor_profile": {
+      "vendor_id": "V-601",
+      "name": "Global Marketing",
+      "risk_rating": "Low"
+    },
+    "policy": {
+      "approval_threshold": 5000.00
+    },
+    "mismatches": [],
+    "risks": [],
+    "expected_resolution": "escalate_manager",
+    "scenario_name": "Above approval threshold"
+  },
+  {
+    "id": "med-002",
+    "task_id": "medium",
+    "invoice": {
+      "invoice_number": "INV-2002",
+      "total_amount": 1080.00,
+      "tax_amount": 80.00,
+      "base_amount": 1000.00,
+      "vendor_id": "V-602",
+      "items": [{"description": "Cleaning Supplies", "quantity": 50, "price": 20.00}]
+    },
+    "po": {
+      "po_number": "PO-7002",
+      "total_amount": 1000.00,
+      "items": [{"description": "Cleaning Supplies", "quantity": 50, "price": 20.00}]
+    },
+    "goods_receipt": {
+      "received_items": [{"description": "Cleaning Supplies", "quantity": 50}]
+    },
+    "vendor_profile": {
+      "vendor_id": "V-602",
+      "name": "Cleaners R Us"
+    },
+    "policy": {
+      "approval_threshold": 5000.00,
+      "standard_tax_rate": 0.05
+    },
+    "mismatches": ["tax_mismatch"],
+    "risks": [],
+    "expected_resolution": "reject",
+    "scenario_name": "Incorrect tax calculation"
+  },
+  {
+    "id": "med-003",
+    "task_id": "medium",
+    "invoice": {
+      "invoice_number": "INV-2003",
+      "total_amount": 3000.00,
+      "vendor_id": "V-603",
+      "date": "2024-03-20"
+    },
+    "po": { "total_amount": 3000.00 },
+    "goods_receipt": { "received_items": [{"quantity": 100}] },
+    "vendor_profile": { "vendor_id": "V-603", "name": "Bulk Supplier" },
+    "policy": { "approval_threshold": 5000.00 },
+    "mismatches": ["duplicate_invoice"],
+    "risks": [],
+    "history": [
+      { "invoice_number": "INV-2003", "date": "2024-02-15", "amount": 3000.00, "status": "Paid" }
+    ],
+    "expected_resolution": "reject",
+    "scenario_name": "Duplicate invoice detection"
+  },
+  {
+    "id": "med-004",
+    "task_id": "medium",
+    "invoice": {
+      "invoice_number": "INV-2004",
+      "total_amount": 4500.00,
+      "vendor_id": "V-604",
+      "items": [{"description": "Consulting", "quantity": 1, "price": 4500.00}]
+    },
+    "po": {
+      "po_number": "PO-7004",
+      "total_amount": 4500.00,
+      "items": [{"description": "Consulting", "quantity": 1, "price": 4500.00}]
+    },
+    "goods_receipt": null,
+    "vendor_profile": { "vendor_id": "V-604", "name": "Expert Consult" },
+    "policy": { "approval_threshold": 5000.00 },
+    "mismatches": ["missing_document"],
+    "risks": [],
+    "expected_resolution": "request_document",
+    "scenario_name": "Service invoice missing confirmation"
+  },
+  {
+    "id": "med-005",
+    "task_id": "medium",
+    "invoice": {
+      "invoice_number": "INV-2005",
+      "total_amount": 550.00,
+      "vendor_id": "V-605"
+    },
+    "po": null,
+    "goods_receipt": { "received_items": [] },
+    "vendor_profile": { "vendor_id": "V-605", "name": "Ad-hoc Vendor" },
+    "policy": { "approval_threshold": 5000.00 },
+    "mismatches": ["unauthorized_purchase"],
+    "risks": [],
+    "expected_resolution": "reject",
+    "scenario_name": "No PO found for invoice"
+  }
+]

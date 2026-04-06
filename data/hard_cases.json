@@ -1,0 +1,99 @@
+[
+  {
+    "id": "hard-001",
+    "task_id": "hard",
+    "invoice": {
+      "invoice_number": "INV-3001",
+      "total_amount": 12000.00,
+      "vendor_id": "V-701",
+      "bank_account": "ACC-999-000-111",
+      "items": [{"description": "Cloud Servers", "quantity": 1, "price": 12000.00}]
+    },
+    "po": { "po_number": "PO-8001", "total_amount": 12000.00 },
+    "goods_receipt": { "received_items": [{"quantity": 1}] },
+    "vendor_profile": {
+      "vendor_id": "V-701",
+      "name": "Cloud Infra",
+      "bank_account": "ACC-555-444-333"
+    },
+    "policy": { "approval_threshold": 10000.00 },
+    "mismatches": [],
+    "risks": ["bank_account_change"],
+    "expected_resolution": "escalate_risk",
+    "scenario_name": "Bank account mismatch - Possible Fraud"
+  },
+  {
+    "id": "hard-002",
+    "task_id": "hard",
+    "invoice": {
+      "invoice_number": "INV-3002",
+      "total_amount": 4900.00,
+      "vendor_id": "V-702",
+      "items": [{"description": "Laptops (Bulk)", "quantity": 1, "price": 4900.00}]
+    },
+    "po": { "po_number": "PO-8002", "total_amount": 4900.00 },
+    "goods_receipt": { "received_items": [{"quantity": 1}] },
+    "vendor_profile": { "vendor_id": "V-702", "name": "Bulk PC" },
+    "policy": { "approval_threshold": 5000.00 },
+    "mismatches": [],
+    "risks": ["split_invoice"],
+    "history": [
+      { "invoice_number": "INV-3001-A", "amount": 4950.00, "date": "2024-03-10", "status": "Pending" }
+    ],
+    "expected_resolution": "escalate_risk",
+    "scenario_name": "Split invoice to avoid threshold"
+  },
+  {
+    "id": "hard-003",
+    "task_id": "hard",
+    "invoice": {
+      "invoice_number": "INV-3003",
+      "total_amount": 1200.00,
+      "vendor_id": "V-703",
+      "items": [{"description": "Replacement Keyboards", "quantity": 10, "price": 120.00}]
+    },
+    "po": { "po_number": "PO-8003", "total_amount": 1200.00 },
+    "goods_receipt": { "received_items": [{"quantity": 10}] },
+    "vendor_profile": { "vendor_id": "V-703", "name": "Keyboards Plus" },
+    "policy": { "approval_threshold": 5000.00 },
+    "history": [
+      { "invoice_number": "INV-1001", "amount": 1200.00, "price_per_item": 60.00, "date": "2023-12-01" }
+    ],
+    "risks": ["unusual_price_inflation"],
+    "expected_resolution": "escalate_risk",
+    "scenario_name": "100% price inflation from previous order"
+  },
+  {
+    "id": "hard-004",
+    "task_id": "hard",
+    "invoice": {
+      "invoice_number": "INV-3004",
+      "total_amount": 15000.00,
+      "vendor_id": "V-704",
+      "vendor_address": "Main St, City A"
+    },
+    "po": { "po_number": "PO-8004", "total_amount": 15000.00 },
+    "goods_receipt": { "received_items": [{"delivery_info": "Self-pickup by vendor employee"}] },
+    "vendor_profile": { "vendor_id": "V-704" },
+    "policy": { "approval_threshold": 10000.00 },
+    "risks": ["inconsistent_delivery"],
+    "expected_resolution": "escalate_risk",
+    "scenario_name": "Suspect delivery method for high value"
+  },
+  {
+    "id": "hard-005",
+    "task_id": "hard",
+    "invoice": {
+      "invoice_number": "INV-3005",
+      "total_amount": 1800.00,
+      "vendor_id": "V-705"
+    },
+    "po": { "po_number": "PO-8005", "total_amount": 1800.00 },
+    "goods_receipt": { "received_items": [{"quantity": 5}] },
+    "vendor_profile": { "vendor_id": "V-705", "risk_rating": "High", "history": "Multiple dispute cases" },
+    "policy": { "approval_threshold": 5000.00 },
+    "risks": ["negative_vendor_history"],
+    "expected_resolution": "escalate_risk",
+    "scenario_name": "Review due to high-risk vendor history"
+  }
+]

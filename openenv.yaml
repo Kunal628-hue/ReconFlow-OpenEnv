@@ -1,0 +1,29 @@
+name: ReconFlow-OpenEnv
+version: "1.0.0"
+description: "AI agent environment for Accounts Payable / Procurement Operations. Simulate invoice reconciliation, fraud detection, and policy compliance."
+
+tasks:
+  - id: easy
+    name: "Basic 3-Way Match"
+    description: "Handle simple invoice matching vs PO and Goods Receipt. Low risk, simple rules."
+  - id: medium
+    name: "Policy-Aware Routing"
+    description: "Manage complex business logic, tax rules, and invoice duplicates."
+  - id: hard
+    name: "Fraud/Anomaly Escalation"
+    description: "Detect subtle fraud indicators and unusual invoice patterns for safety."
+
+models:
+  observation: "app.env.models.Observation"
+  action: "app.env.models.Action"
+  step_result: "app.env.models.StepResult"
+
+metadata:
+  domain: "finance-ops"
+  sub_domain: "procurement"
+  type: "workflow-simulation"
+  tags: ["invoice-reconciliation", "procurement", "accounts-payable", "fraud-detection"]
+
+entrypoints:
+  api: "app.api:app"
+  local: "app.env.environment:ReconFlowEnv"

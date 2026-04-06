@@ -1,0 +1,159 @@
+[
+  {
+    "id": "easy-001",
+    "task_id": "easy",
+    "invoice": {
+      "invoice_number": "INV-1001",
+      "total_amount": 1250.00,
+      "currency": "USD",
+      "vendor_id": "V-501",
+      "date": "2024-03-15",
+      "items": [{"description": "Office Chairs", "quantity": 5, "price": 250.00}]
+    },
+    "po": {
+      "po_number": "PO-9001",
+      "total_amount": 1250.00,
+      "items": [{"description": "Office Chairs", "quantity": 5, "price": 250.00}]
+    },
+    "goods_receipt": {
+      "gr_number": "GR-8001",
+      "received_items": [{"description": "Office Chairs", "quantity": 5}]
+    },
+    "vendor_profile": {
+      "vendor_id": "V-501",
+      "name": "Office Depot",
+      "risk_rating": "Low",
+      "payment_terms": "Net 30"
+    },
+    "policy": {
+      "approval_threshold": 5000.00
+    },
+    "mismatches": [],
+    "risks": [],
+    "expected_resolution": "approve",
+    "scenario_name": "Perfect 3-way match"
+  },
+  {
+    "id": "easy-002",
+    "task_id": "easy",
+    "invoice": {
+      "invoice_number": "INV-1002",
+      "total_amount": 1500.00,
+      "currency": "USD",
+      "vendor_id": "V-502",
+      "date": "2024-03-16",
+      "items": [{"description": "Laptops", "quantity": 1, "price": 1500.00}]
+    },
+    "po": {
+      "po_number": "PO-9002",
+      "total_amount": 1400.00,
+      "items": [{"description": "Laptops", "quantity": 1, "price": 1400.00}]
+    },
+    "goods_receipt": {
+      "gr_number": "GR-8002",
+      "received_items": [{"description": "Laptops", "quantity": 1}]
+    },
+    "vendor_profile": {
+      "vendor_id": "V-502",
+      "name": "Tech Solutions",
+      "risk_rating": "Low"
+    },
+    "policy": {
+      "approval_threshold": 5000.00
+    },
+    "mismatches": ["amount_mismatch"],
+    "risks": [],
+    "expected_resolution": "reject",
+    "scenario_name": "Price mismatch (Amount)"
+  },
+  {
+    "id": "easy-003",
+    "task_id": "easy",
+    "invoice": {
+      "invoice_number": "INV-1003",
+      "total_amount": 800.00,
+      "vendor_id": "V-503",
+      "items": [{"description": "Monitors", "quantity": 4, "price": 200.00}]
+    },
+    "po": {
+      "po_number": "PO-9003",
+      "total_amount": 800.00,
+      "items": [{"description": "Monitors", "quantity": 4, "price": 200.00}]
+    },
+    "goods_receipt": {
+      "gr_number": "GR-8003",
+      "received_items": [{"description": "Monitors", "quantity": 3}]
+    },
+    "vendor_profile": {
+      "vendor_id": "V-503",
+      "name": "Peripheral Pros",
+      "risk_rating": "Low"
+    },
+    "policy": {
+      "approval_threshold": 5000.00
+    },
+    "mismatches": ["quantity_mismatch"],
+    "risks": [],
+    "expected_resolution": "reject",
+    "scenario_name": "Quantity mismatch (Receipt vs Invoice)"
+  },
+  {
+    "id": "easy-004",
+    "task_id": "easy",
+    "invoice": {
+      "invoice_number": "INV-1004",
+      "total_amount": 450.00,
+      "vendor_id": "V-504",
+      "items": [{"description": "USB-C Cables", "quantity": 10, "price": 45.00}]
+    },
+    "po": {
+      "po_number": "PO-9004",
+      "total_amount": 450.00,
+      "items": [{"description": "USB-C Cables", "quantity": 10, "price": 45.00}]
+    },
+    "goods_receipt": {
+      "gr_number": "GR-8004",
+      "received_items": [{"description": "USB-C Cables", "quantity": 10}]
+    },
+    "vendor_profile": {
+      "vendor_id": "V-504",
+      "name": "Cable Co",
+      "risk_rating": "Low"
+    },
+    "policy": {
+      "approval_threshold": 5000.00
+    },
+    "mismatches": [],
+    "risks": [],
+    "expected_resolution": "approve",
+    "scenario_name": "Simple low value match"
+  },
+  {
+    "id": "easy-005",
+    "task_id": "easy",
+    "invoice": {
+      "invoice_number": "INV-1005",
+      "total_amount": 900.00,
+      "vendor_id": "V-505",
+      "items": [{"description": "Desk Lamps", "quantity": 10, "price": 90.00}]
+    },
+    "po": {
+      "po_number": "PO-9005",
+      "total_amount": 900.00,
+      "items": [{"description": "Desk Lamps", "quantity": 10, "price": 90.00}]
+    },
+    "goods_receipt": null,
+    "vendor_profile": {
+      "vendor_id": "V-505",
+      "name": "Home Furnishings",
+      "risk_rating": "Low"
+    },
+    "policy": {
+      "approval_threshold": 5000.00
+    },
+    "mismatches": ["missing_document"],
+    "risks": [],
+    "expected_resolution": "reject",
+    "scenario_name": "Missing Goods Receipt"
+  }
+]

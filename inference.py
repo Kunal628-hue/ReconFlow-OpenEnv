@@ -1,0 +1,114 @@
+import requests
+import json
+import os
+import time
+from typing import Dict, Any, List
+
+API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000")
+
+class BaselineAgent:
+    def __init__(self, session_id: str):
+        self.session_id = session_id
+
+    def choose_action(self, obs: Dict[str, Any]) -> Dict[str, Any]:
+        """Simple rule-based strategy."""
+        history = obs.get("action_history", [])
+        
+        # 1. Inspect mandatory documents
+        if "inspect_invoice" not in history:
+            return {"action_type": "inspect_invoice"}
+        if "inspect_po" not in history:
+            return {"action_type": "inspect_po"}
+        if "inspect_goods_receipt" not in history:
+            return {"action_type": "inspect_goods_receipt"}
+        if "inspect_vendor_profile" not in history:
+            return {"action_type": "inspect_vendor_profile"}
+
+        # 2. Check for duplicates in hard(er) tasks
+        if obs["task_id"] in ["medium", "hard"] and "check_duplicate_invoice" not in history:
+            return {"action_type": "check_duplicate_invoice"}
+
+        # 3. Analyze what was revealed
+        invoice = obs.get("invoice_summary")
+        po = obs.get("po_summary")
+        gr = obs.get("goods_receipt_summary")
+        
+        # Simple resolution logic based on flags or values
+        if "duplicate_invoice" in obs.get("mismatch_flags", []):
+            return {"action_type": "reject", "reason": "Duplicate invoice found."}
+        
+        # Check for numeric mismatch if both are revealed
+        if invoice and po:
+            inv_total = invoice.get("total_amount")
+            po_total = po.get("total_amount")
+            if po_total == "NOT_FOUND":
+              return {"action_type": "reject", "reason": "No matching PO found."}
+            if inv_total != po_total:
+              return {"action_type": "reject", "reason": f"Amount mismatch: Inv {inv_total} vs PO {po_total}"}
+        
+        # Policy: Check threshold
+        if invoice and invoice.get("total_amount", 0) > obs.get("approval_threshold", 0):
+            return {"action_type": "escalate_manager", "reason": "Above approval threshold."}
+
+        # Handle hard cases (fraud indicators usually hidden in full data, but let's assume we escalate if uncertain)
+        if obs["task_id"] == "hard":
+            # If everything looks too perfect but it's a hard task, maybe check history or escalate risk
+            if "inspect_vendor_profile" in history:
+                return {"action_type": "escalate_risk", "reason": "Hard task: escalatting for manual risk review."}
+
+        # Default approval if all clear
+        return {"action_type": "approve", "reason": "All documents match and within threshold."}
+
+def run_inference(task_id: str = "easy"):
+    print(f"--- Running Inference for Task: {task_id} ---")
+    
+    # 1. Reset/Start Session
+    resp = requests.post(f"{API_BASE_URL}/reset?task_id={task_id}")
+    if resp.status_code != 200:
+        print(f"Error starting session: {resp.text}")
+        return
+        
+    data = resp.json()
+    session_id = data["session_id"]
+    obs = data["observation"]
+    
+    agent = BaselineAgent(session_id)
+    done = False
+    total_reward = 0.0
+    steps = 0
+    
+    while not done and steps < 20:
+        steps += 1
+        action = agent.choose_action(obs)
+        print(f"Step {steps}: Action -> {action['action_type']}")
+        
+        resp = requests.post(f"{API_BASE_URL}/step/{session_id}", json=action)
+        if resp.status_code != 200:
+            print(f"Error taking step: {resp.text}")
+            break
+            
+        step_data = resp.json()
+        obs = step_data["observation"]
+        reward = step_data["reward"]
+        done = step_data["done"]
+        total_reward += reward
+        
+        if done:
+            print(f"Episode Finished! Total Reward: {total_reward:.2f}")
+            info = step_data.get("info", {})
+            if "final_score" in info:
+                print(f"Final Score: {info['final_score']}")
+            if "score_explanation" in info:
+                print(f"Explanation: {json.dumps(info['score_explanation'], indent=2)}")
+
+if __name__ == "__main__":
+    # Check if server is running
+    try:
+        requests.get(f"{API_BASE_URL}/health")
+    except:
+        print(f"Server not found at {API_BASE_URL}. Please start the server first.")
+        exit(1)
+        
+    for task in ["easy", "medium", "hard"]:
+        run_inference(task)
+        print("\n" + "="*50 + "\n")
