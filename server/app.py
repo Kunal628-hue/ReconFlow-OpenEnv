@@ -1,3 +1,4 @@
+from app.api import app
 import uvicorn
 import os
 

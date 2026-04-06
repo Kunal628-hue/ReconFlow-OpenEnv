@@ -1,3 +1,11 @@
+---
+title: My OpenCV
+emoji: 🏢
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8000
+---
 # 🛡️ ReconFlow-OpenEnv: AI-Powered Accounts Payable Assistant Simulator
 
 [![Powered by OpenEnv](https://img.shields.io/badge/Powered%20By-OpenEnv-blue?style=for-the-badge&logo=openai)](https://github.com/OpenEnv/OpenEnv)

@@ -10,9 +10,10 @@ COPY . .
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
+ENV PYTHONPATH=/app
 
 # Expose port
 EXPOSE 8000
 
 # Start server
-CMD ["python", "app/main.py"]
+CMD ["python", "-m", "app.main"]
