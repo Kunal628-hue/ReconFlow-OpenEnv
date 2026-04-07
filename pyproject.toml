@@ -15,8 +15,8 @@ dependencies = [
     "requests==2.31.0",
     "pytest==8.0.2",
     "PyYAML==6.0.1",
-    "openai",
-    "openenv-core>=0.2.0"
+    "openai==2.30.0",
+    "openenv-core==0.2.0"
 ]
 
 [project.optional-dependencies]
