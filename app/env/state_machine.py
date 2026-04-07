@@ -3,6 +3,7 @@ from .models import (
     Action, ActionType, Observation, StepResult, InternalState, 
     CaseStage, MismatchFlag, RiskFlag
 )
+from .scoring_utils import sanitize_score
 import datetime
 
 class ReconFlowStateMachine:
@@ -141,4 +142,4 @@ class ReconFlowStateMachine:
             info["action_feedback"] += " Max steps reached."
 
         obs = self._get_observation()
-        return obs, reward, done, info
+        return obs, sanitize_score(reward), done, info

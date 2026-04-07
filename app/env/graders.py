@@ -1,5 +1,6 @@
 from typing import List, Dict, Any, Tuple
 from .models import Action, ActionType, InternalState
+from .scoring_utils import sanitize_score
 
 class ReconFlowGrader:
     def __init__(self, scenario: Dict[str, Any]):
@@ -47,12 +48,8 @@ class ReconFlowGrader:
         elif state.elapsed_steps <= 15:
             score += 0.05
 
-        final_score = min(max(round(score, 2), 0.0), 1.0)
-        if final_score <= 0.0:
-            return 0.01
-        if final_score >= 1.0:
-            return 0.99
-        return final_score
+        final_score = round(score, 2)
+        return sanitize_score(final_score)
 
     def explain_score(self, state: InternalState) -> Dict[str, Any]:
         return {

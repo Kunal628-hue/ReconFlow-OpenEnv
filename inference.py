@@ -10,6 +10,8 @@ MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 HF_TOKEN = os.getenv("HF_TOKEN")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 
+from app.env.scoring_utils import sanitize_score
+
 # Optional: configure the OpenAI client using these variables if using LLMs
 client = OpenAI(
     base_url=os.environ.get("API_BASE_URL", "http://localhost:8000"),
@@ -85,7 +87,7 @@ def run_inference(task_id: str = "easy"):
     resp = requests.post(f"{API_BASE_URL}/reset?task_id={task_id}")
     if resp.status_code != 200:
         print(f"Error starting session: {resp.text}", flush=True)
-        print(f"[END] task={task_id} score=0.0 steps=0", flush=True)
+        print(f"[END] task={task_id} score={sanitize_score(0.0)} steps=0", flush=True)
         return
         
     data = resp.json()
@@ -116,16 +118,13 @@ def run_inference(task_id: str = "easy"):
         
         if done:
             info = step_data.get("info", {})
-            final_score = info.get("final_score", total_reward)
-            if final_score <= 0.0: final_score = 0.01
-            if final_score >= 1.0: final_score = 0.99
+            raw_score = info.get("final_score", total_reward)
+            final_score = sanitize_score(raw_score)
             print(f"[END] task={task_id} score={final_score} steps={steps}", flush=True)
             return
 
     # If timeout or loop exits early
-    final_score = total_reward
-    if final_score <= 0.0: final_score = 0.01
-    if final_score >= 1.0: final_score = 0.99
+    final_score = sanitize_score(total_reward)
     print(f"[END] task={task_id} score={final_score} steps={steps}", flush=True)
 
 if __name__ == "__main__":
