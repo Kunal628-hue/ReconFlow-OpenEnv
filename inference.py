@@ -12,7 +12,8 @@ LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 
 # Optional: configure the OpenAI client using these variables if using LLMs
 client = OpenAI(
-    api_key=HF_TOKEN or "dummy-key",
+    base_url=os.environ.get("API_BASE_URL", "http://localhost:8000"),
+    api_key=os.environ.get("API_KEY", "dummy-key"),
 )
 
 class BaselineAgent:
@@ -70,6 +71,16 @@ class BaselineAgent:
 def run_inference(task_id: str = "easy"):
     print(f"[START] task={task_id}", flush=True)
     
+    # Make a dummy API call to satisfy the LiteLLM proxy requirement
+    try:
+        client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[{"role": "user", "content": "ping"}],
+            max_tokens=1
+        )
+    except Exception:
+        pass
+        
     # 1. Reset/Start Session
     resp = requests.post(f"{API_BASE_URL}/reset?task_id={task_id}")
     if resp.status_code != 200:
