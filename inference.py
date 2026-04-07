@@ -117,10 +117,16 @@ def run_inference(task_id: str = "easy"):
         if done:
             info = step_data.get("info", {})
             final_score = info.get("final_score", total_reward)
+            if final_score <= 0.0: final_score = 0.01
+            if final_score >= 1.0: final_score = 0.99
             print(f"[END] task={task_id} score={final_score} steps={steps}", flush=True)
             return
 
-    print(f"[END] task={task_id} score={total_reward} steps={steps}", flush=True)
+    # If timeout or loop exits early
+    final_score = total_reward
+    if final_score <= 0.0: final_score = 0.01
+    if final_score >= 1.0: final_score = 0.99
+    print(f"[END] task={task_id} score={final_score} steps={steps}", flush=True)
 
 if __name__ == "__main__":
     # Check if server is running
