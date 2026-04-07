@@ -1,0 +1,14 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.venv/
+tests/
+Dockerfile
+.dockerignore
+uv.lock
+server_log.txt
