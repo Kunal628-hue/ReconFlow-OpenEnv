@@ -7,7 +7,7 @@ from .models import (
 from .graders import ReconFlowGrader
 from .rewards import RewardCalculator
 
-from .scoring_utils import sanitize_score
+from .rewards import RewardCalculator
 
 class ReconFlowEnv:
     def __init__(self, task_id: str = "easy", case_id: Optional[str] = None):
@@ -34,7 +34,7 @@ class ReconFlowEnv:
             info["final_score"] = self.grader.grade(self.state_machine.state)
             info["score_explanation"] = self.grader.explain_score(self.state_machine.state)
         
-        return obs, sanitize_score(reward), done, info
+        return obs, max(0.01, min(0.99, float(reward))), done, info
 
     def state(self) -> InternalState:
         return self.state_machine.state
