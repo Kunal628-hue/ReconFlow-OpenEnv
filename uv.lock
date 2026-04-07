@@ -588,7 +588,7 @@ dev = [
 requires-dist = [
     { name = "fastapi", specifier = "==0.110.0" },
     { name = "openai" },
-    { name = "openenv-core" },
+    { name = "openenv-core", specifier = ">=0.2.0" },
     { name = "pydantic", specifier = "==2.6.3" },
     { name = "pytest", specifier = "==8.0.2" },
     { name = "pytest", marker = "extra == 'dev'" },
