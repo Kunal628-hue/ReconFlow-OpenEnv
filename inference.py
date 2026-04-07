@@ -68,14 +68,13 @@ class BaselineAgent:
         return {"action_type": "approve", "reason": "All documents match and within threshold."}
 
 def run_inference(task_id: str = "easy"):
-    print("START")
-    print(f"--- Running Inference for Task: {task_id} ---")
+    print(f"[START] task={task_id}", flush=True)
     
     # 1. Reset/Start Session
     resp = requests.post(f"{API_BASE_URL}/reset?task_id={task_id}")
     if resp.status_code != 200:
-        print(f"Error starting session: {resp.text}")
-        print("END")
+        print(f"Error starting session: {resp.text}", flush=True)
+        print(f"[END] task={task_id} score=0.0 steps=0", flush=True)
         return
         
     data = resp.json()
@@ -89,13 +88,11 @@ def run_inference(task_id: str = "easy"):
     
     while not done and steps < 20:
         steps += 1
-        print("STEP")
         action = agent.choose_action(obs)
-        print(f"Step {steps}: Action -> {action['action_type']}")
         
         resp = requests.post(f"{API_BASE_URL}/step/{session_id}", json=action)
         if resp.status_code != 200:
-            print(f"Error taking step: {resp.text}")
+            print(f"Error taking step: {resp.text}", flush=True)
             break
             
         step_data = resp.json()
@@ -104,15 +101,15 @@ def run_inference(task_id: str = "easy"):
         done = step_data["done"]
         total_reward += reward
         
+        print(f"[STEP] step={steps} reward={reward}", flush=True)
+        
         if done:
-            print(f"Episode Finished! Total Reward: {total_reward:.2f}")
             info = step_data.get("info", {})
-            if "final_score" in info:
-                print(f"Final Score: {info['final_score']}")
-            if "score_explanation" in info:
-                print(f"Explanation: {json.dumps(info['score_explanation'], indent=2)}")
-    
-    print("END")
+            final_score = info.get("final_score", total_reward)
+            print(f"[END] task={task_id} score={final_score} steps={steps}", flush=True)
+            return
+
+    print(f"[END] task={task_id} score={total_reward} steps={steps}", flush=True)
 
 if __name__ == "__main__":
     # Check if server is running
